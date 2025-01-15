@@ -1,0 +1,665 @@
+openapi: 3.0.0
+info:
+  title: Some Waypoints/Routes API
+  version: 0.1.0
+
+servers:
+  - url: http://localhost:9000/api/v1
+
+tags:
+  - name: Waypoints
+  - name: Routes
+
+components:
+  schemas:
+    Route:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор маршрута
+        name:
+          type: string
+          description: Название маршрута
+        route_kind:
+          type: integer
+          description: Вид маршрута (направление)
+        length:
+          type: integer
+          description: Длина маршрута
+        price:
+          type: integer
+          description: Стоимость маршрута
+        vehicle_type:
+          type: string
+          description: Тип транспорта
+        route_type:
+          type: string
+          description: Тип маршрута
+    RouteInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Название маршрута
+        route_kind:
+          type: integer
+          description: Вид маршрута (направление)
+        length:
+          type: integer
+          description: Длина маршрута
+        price:
+          type: integer
+          description: Стоимость маршрута
+        vehicle_type:
+          type: string
+          description: Тип транспорта
+        route_type:
+          type: string
+          description: Тип маршрута
+        waypoints:
+          type: array
+          description: Список уникальных идентификаторов остановок на маршруте (должны соответствовать длине маршрута)
+          items:
+            type: string
+    RouteWithWaypoints:
+      type: object
+      properties:
+        route:
+          $ref: '#/components/schemas/Route'
+        waypoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/Waypoint'
+    CommonRoutes:
+      type: object
+      properties:
+        from:
+          $ref: '#/components/schemas/Waypoint'
+        to:
+          $ref: '#/components/schemas/Waypoint'
+        routes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Route'
+    WaypointRoute:
+      type: object
+      properties:
+        route_id:
+          type: string
+          description: Уникальный идентификатор маршрута
+        waypoint_id:
+          type: string
+          description: Уникальный идентификатор остановки
+        route_name:
+          type: string
+          description: Название маршрута
+        route_kind:
+          type: integer
+          description: Вид маршрута (направление)
+        route_numder:
+          type: integer
+          description: Порядковый 
+    WaypointInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Название остановки
+          
+        lat:
+          type: integer
+          description: Широта
+        lon:
+          type: integer
+          description: Долгота
+    Waypoint:
+      type: object
+      properties:
+        id:
+          type: string 
+          description: Уникальный идентификатор остановки
+        name:
+          type: string
+          description: Название остановки
+        lat:
+          type: integer
+          description: Широта
+        lon:
+          type: integer
+          description: Долгота
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Описание ошибки
+
+paths:
+  /waypoints:
+    get:
+      tags:
+        - Waypoints
+      summary: Получение всех существующих путевых точек (остановок).
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Количество записей в ответе
+          required: false
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+          description: Смещение от начала списка
+          required: false
+      responses:
+        "200": # status code
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Waypoint'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Waypoints
+      summary: Создание новой путевой точки (остановки).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WaypointInfo'
+      responses:
+        "201": # status code
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /waypoints/{id}:
+    get:
+      tags:
+        - Waypoints
+      summary: Получение одной путевой точки (остановки).
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: Уникальный идентификатор остановки
+          required: true
+      responses:
+        "200": # status code
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Waypoint'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Waypoints
+      summary: Обновление существующей путевой точки (остановки).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WaypointInfo'
+      responses:
+        "200": # status code
+          description: OK
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'  
+    delete:
+      tags:
+        - Waypoints
+      summary: Удаление существующей путевой точки (остановки).
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: Уникальный идентификатор остановки
+          required: true
+      responses:
+        "204": # status code
+          description: No Content
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /waypoints/nearest:
+    get:
+      tags:
+        - Waypoints
+      summary: Получение ближайших путевых точек (остановок).
+      parameters:
+        - in: query
+          name: lat
+          schema:
+            type: integer
+          description: Широта
+          required: true
+        - in: query
+          name: lon
+          schema:
+            type: integer
+          description: Долгота
+          required: true
+        - in: query
+          name: amount
+          schema:
+            type: integer
+            default: 1
+          description: Количество возвращаемых ближайших путевых точек
+          required: false
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Количество записей в ответе
+          required: false
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+          description: Смещение от начала списка
+          required: false
+      responses:
+        "200": # status code
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Waypoint'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /waypoints/{id}/routes:
+    get:
+      tags:
+        - Waypoints
+      summary: Получение всех маршрутов, связанных с путевой точкой (остановкой).
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: Уникальный идентификатор остановки
+          required: true
+      responses:
+        "200": # status code
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WaypointRoute'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /waypoints/{id}/routes/{waypoint_id}:
+    get:
+      tags:
+        - Waypoints
+      summary: Получение общих маршрутов на двух путевых точках.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: Уникальный идентификатор первой остановки
+          required: true
+        - in: path
+          name: waypoint_id
+          schema:
+            type: string
+          description: Уникальный идентификатор второй остановки
+          required: true
+      responses:
+        "200": # status code
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Route'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /waypoints/route:
+    get:
+      tags:
+        - Waypoints
+      summary: Получение общих маршрутов на двух путевых точках, ближайших к заданным координатам.
+      parameters:
+        - in: query
+          name: amount
+          schema:
+            type: integer
+            default: 1
+          description: Количество ближайших остановок относительно заданных координат
+          required: false
+        - in: query
+          name: lat1
+          schema:
+            type: integer
+          description: Широта первой точки
+          required: true
+        - in: query
+          name: lon1
+          schema:
+            type: integer
+          description: Долгота первой точки
+          required: true
+        - in: query
+          name: lat2
+          schema:
+            type: integer
+          description: Широта второй точки
+          required: true
+        - in: query
+          name: lon2
+          schema:
+            type: integer
+          description: Долгота второй точки
+          required: true
+      responses:
+        "200": # status code
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommonRoutes'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /routes:
+    get:
+      tags:
+        - Routes
+      summary: Получение всех существующих маршрутов.
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Количество записей в ответе
+          required: false
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+          description: Смещение от начала списка
+          required: false
+      responses:
+        "200": # status code
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Route'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+        - Routes
+      summary: Создание нового маршрута.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteInfo'
+      responses:
+        "201": # status code
+          description: Created
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /routes/{id}:
+    get:
+      tags:
+        - Routes
+      summary: Получение одного маршрута со всеми его остановками.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: Уникальный идентификатор маршрута
+          required: true
+      responses:
+        "200": # status code
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteWithWaypoints'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Routes
+      summary: Удаление существующего маршрута.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          description: Уникальный идентификатор маршрута
+          required: true
+      responses:
+        "200": # status code
+          description: OK
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
