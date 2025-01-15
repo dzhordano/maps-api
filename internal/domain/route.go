@@ -29,7 +29,6 @@ type RoutesRepository interface {
 	GetById(ctx context.Context, id uuid.UUID) (Route, error)
 
 	Create(ctx context.Context, route Route, waypointIds []uuid.UUID) error
-	Update(ctx context.Context, route Route) error
 	Delete(ctx context.Context, id uuid.UUID) error
 
 	GetByIds(ctx context.Context, id ...uuid.UUID) ([]Route, error)

@@ -11,6 +11,5 @@ func NewRoutesRouter(log logger.Logger, rc *controller.RoutesController, r chi.R
 	r.Get("/routes", rc.ListRoutes)        // Получение всех существующих маршрутов.
 
 	r.Post("/routes", rc.CreateRoute)        // Создание маршрута.
-	r.Put("/routes/{id}", rc.UpdateRoute)    // Обновление маршрута.
 	r.Delete("/routes/{id}", rc.DeleteRoute) // Удаление маршрута.
 }

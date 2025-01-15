@@ -178,11 +178,6 @@ func (r *routesRepo) Create(ctx context.Context, route domain.Route, waypointIds
 	})
 }
 
-// TODO implement
-func (r *routesRepo) Update(ctx context.Context, route domain.Route) error {
-	return nil
-}
-
 func (r *routesRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	deleteBuilder := sq.Delete(routesTable).
 		Where(sq.Eq{"id": id}).

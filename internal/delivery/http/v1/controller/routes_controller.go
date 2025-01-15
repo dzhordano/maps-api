@@ -154,64 +154,6 @@ func (rc *RoutesController) CreateRoute(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (rc *RoutesController) UpdateRoute(w http.ResponseWriter, r *http.Request) {
-
-	w.WriteHeader(http.StatusNotImplemented)
-
-	// w.Header().Add("Content-Type", "application/json")
-
-	// id := chi.URLParam(r, "id")
-
-	// parsedId, err := uuid.Parse(id)
-	// if err != nil {
-	// 	rc.Log.Error("update route", "error:", err)
-	// 	httpResponse(w, http.StatusBadRequest, "invalid uuid")
-	// 	return
-	// }
-
-	// var route requests.UpdateRouteRequest
-	// err = json.NewDecoder(r.Body).Decode(&route)
-	// if err != nil {
-	// 	rc.Log.Error("update route", "error:", err)
-	// 	httpResponse(w, http.StatusBadRequest, "invalid request body")
-	// 	return
-	// }
-
-	// if err := route.Validate(); err != nil {
-	// 	rc.Log.Error("create route", "error:", err)
-	// 	httpResponse(w, http.StatusBadRequest, err.Error())
-	// 	return
-	// }
-
-	// rc.Log.Debug("update route", "decoded route:", route)
-
-	// domainRoute := domain.Route{}
-
-	// domainRoute.ID = parsedId
-
-	// if route.Name != nil {
-	// 	domainRoute.Name = *route.Name
-	// }
-	// if route.Price != nil {
-	// 	domainRoute.Price = *route.Price
-	// }
-	// if route.VehicleType != nil {
-	// 	domainRoute.VehicleType = *route.VehicleType
-	// }
-	// if route.RouteType != nil {
-	// 	domainRoute.RouteType = *route.RouteType
-	// }
-
-	// err = rc.RouteUsecase.Update(r.Context(), domainRoute)
-	// if err != nil {
-	// 	rc.Log.Error("update route", "error:", err)
-	// 	httpResponse(w, DomainErrorToHTTP(err), err.Error())
-	// 	return
-	// }
-
-	// w.WriteHeader(http.StatusOK)
-}
-
 func (rc *RoutesController) DeleteRoute(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	id := chi.URLParam(r, "id")

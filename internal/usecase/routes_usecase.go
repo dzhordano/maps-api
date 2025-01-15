@@ -84,10 +84,6 @@ func (r *routesUsecase) Create(ctx context.Context, route domain.Route, waypoint
 	return nil
 }
 
-func (r *routesUsecase) Update(ctx context.Context, route domain.Route) error {
-	panic("implement me")
-}
-
 func (r *routesUsecase) Delete(ctx context.Context, id uuid.UUID) error {
 	if err := r.repo.Delete(ctx, id); err != nil {
 
