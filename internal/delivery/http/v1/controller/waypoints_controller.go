@@ -12,6 +12,8 @@ import (
 	"github.com/google/uuid"
 )
 
+const defaultAmountValue = 1
+
 type WaypointsController struct {
 	Log             logger.Logger
 	WaypointUsecase domain.WaypointsUsecase
@@ -53,7 +55,6 @@ func (wc *WaypointsController) Create(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-// FIXME LIMIT + OFFSET NEEDED
 func (wc *WaypointsController) List(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 
@@ -108,7 +109,6 @@ func (wc *WaypointsController) Get(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 
-	// FIXME Лучше думаю это перенести в usecase
 	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		httpResponse(w, http.StatusBadRequest, "invalid uuid")
@@ -160,10 +160,9 @@ func (wc *WaypointsController) GetNearest(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// FIXME Магическое число
 	var amountInt int
 	if amount == "" {
-		amountInt = 4
+		amountInt = defaultAmountValue
 	} else {
 		amountInt, err = parseInt(amount)
 		if err != nil {
@@ -329,10 +328,19 @@ func (wc *WaypointsController) GetCommonRoutes(w http.ResponseWriter, r *http.Re
 func (wc *WaypointsController) CollectRoutes(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 
-	waypointsAmount, err := parseInt(r.URL.Query().Get("amount"))
-	if err != nil {
-		httpResponse(w, http.StatusBadRequest, "invalid amount parameter")
-		return
+	amount := r.URL.Query().Get("amount")
+
+	var waypointsAmount int
+	var err error
+
+	if amount == "" {
+		waypointsAmount = defaultAmountValue
+	} else {
+		waypointsAmount, err = parseInt(r.URL.Query().Get("amount"))
+		if err != nil {
+			httpResponse(w, http.StatusBadRequest, "invalid amount parameter")
+			return
+		}
 	}
 
 	lat1f, err := parseFloat(r.URL.Query().Get("lat1"))
